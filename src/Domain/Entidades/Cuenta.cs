@@ -8,6 +8,8 @@ public class Cuenta
     public decimal Balance {get; private set;}
     public int EstadosCuenta { get; set;} = 0;
 
+    public string NumeroCuenta { get; set;} = string.Empty;
+
     public void Credito(decimal monto)
     {
         Balance += monto;
