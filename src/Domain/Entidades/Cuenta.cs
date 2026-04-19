@@ -6,7 +6,7 @@ public class Cuenta
 {
     public Guid Id {get; set;}
     public decimal Balance {get; private set;}
-    public string Estado {get; set;} = "ACTIVA";
+    public int EstadosCuenta { get; set;} = 0;
 
     public void Credito(decimal monto)
     {
