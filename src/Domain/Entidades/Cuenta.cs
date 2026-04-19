@@ -2,11 +2,11 @@ using Domain.Enumeradores;
 
 namespace Domain.Entidades;
 
-public class EstadosCuenta
+public class Cuenta
 {
     public Guid Id {get; set;}
     public decimal Balance {get; private set;}
-    public EstadosCuenta Estado {get; set;}
+    public string Estado {get; set;} = "ACTIVA";
 
     public void Credito(decimal monto)
     {
