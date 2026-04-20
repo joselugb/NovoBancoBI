@@ -1,0 +1,61 @@
+{
+  "info": {
+    "name": "NovoBancoBI API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Deposito",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "http://localhost:5000/api/transacciones/deposito",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "transacciones", "deposito"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"idCuenta\": \"{{idCuenta}}\",\n  \"Monto\": 100,\n  \"Referencia\": \"DEP-001\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Transferencia",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "url": {
+          "raw": "http://localhost:5000/api/transacciones/transferencia",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "transacciones", "transferencia"]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"idCuentaOrigen\": \"{{idCuentaOrigen}}\",\n  \"idCuentaDestino\": \"{{idCuentaDestino}}\",\n  \"Monto\": 50,\n  \"Referencia\": \"TRF-001\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Historial de Transacciones",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "http://localhost:5000/api/cuentas/{{idCuenta}}/transacciones?pagina=1&cantidadPorPagina=20",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "cuentas", "{{idCuenta}}", "transacciones"],
+          "query": [
+            { "key": "pagina", "value": "1" },
+            { "key": "cantidadPorPagina", "value": "20" }
+          ]
+        }
+      }
+    }
+  ]
+}
