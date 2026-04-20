@@ -1,6 +1,7 @@
 using Infrastructure.Persistencia;
 using Microsoft.EntityFrameworkCore;
 using Application.Interfaces;
+using Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,8 +16,12 @@ builder.Services.AddScoped<IBancoDbContext>(sp =>
     sp.GetRequiredService<BancoDbContext>());
 
 builder.Services.AddScoped<Application.Servicios.TransaccionServicio>();
+builder.Services.AddScoped<Application.Servicios.TransaccionQueryServicios>();
+builder.Services.AddScoped<Application.Servicios.ClienteServicio>();
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI();
