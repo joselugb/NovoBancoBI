@@ -1,5 +1,6 @@
 
 using Domain.Enumeradores;
+using System.Security.Principal;
 
 namespace Domain.Entidades
 {
@@ -20,5 +21,6 @@ namespace Domain.Entidades
         /// Documento de identidad del cliente.
         /// </summary>
         public string DocumentoIdentidad { get; set; } = string.Empty;
+        public ICollection<Cuenta> Cuentas { get; set; } = new List<Cuenta>();
     }
 }

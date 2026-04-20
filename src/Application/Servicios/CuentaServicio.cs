@@ -23,9 +23,9 @@ public class CuentaServicio
     /// <param name="request"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<CuentaResponse> CrearCuentaAsync(CuentaRequest request, CancellationToken cancellationToken = default)
+    public async Task<CuentaResponse> CrearCuentaAsync(CrearCuentaRequest request, CancellationToken cancellationToken = default)
     {
-        var cliente = await conexionDb.Clientes.FirstOrDefaultAsync(c => c.DocumentoIdentidad == request.DocumentoIdentidad, cancellationToken);
+        var cliente = await conexionDb.Clientes.FirstOrDefaultAsync(c => c.Id == request.IdCliente, cancellationToken);
 
         if (cliente is null)
         {
@@ -37,7 +37,7 @@ public class CuentaServicio
             Id = Guid.NewGuid(),
             IdCliente = cliente.Id,
             NumeroCuenta = GenerarNumeroCuenta(),
-            Tipo = Domain.Enumeradores.TipoCuenta.AHORROS,
+            Tipo = request.TipoCuenta,
             Moneda = "USD",
             Balance = 0.00m,
             EstadosCuenta = Domain.Enumeradores.EstadosCuenta.ACTIVA,

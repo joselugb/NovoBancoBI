@@ -1,61 +1,158 @@
 {
   "info": {
-    "name": "NovoBancoBI API",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    "name": "NovoBancoBI - Banking API",
+    "description": "Colección Postman para probar el microservicio de Gestión de Cuentas y Transacciones del NovoBanco.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "8a7f5e12-4f47-4b15-9b54-111122223333"
   },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "idCuenta",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idCuentaOrigen",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "idCuentaDestino",
+      "value": "",
+      "type": "string"
+    }
+  ],
   "item": [
     {
-      "name": "Deposito",
-      "request": {
-        "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": {
-          "raw": "http://localhost:5000/api/transacciones/deposito",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "5000",
-          "path": ["api", "transacciones", "deposito"]
+      "name": "Cuentas",
+      "item": [
+        {
+          "name": "Crear cuenta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cuentas",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cuentas"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"type\": \"AHORROS\"\n}"
+            }
+          }
         },
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"idCuenta\": \"{{idCuenta}}\",\n  \"Monto\": 100,\n  \"Referencia\": \"DEP-001\"\n}"
+        {
+          "name": "Obtener datos cuenta",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/cuentas/{{idCuenta}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cuentas", "{{idCuenta}}"]
+            }
+          }
+        },
+        {
+          "name": "Obtener transacciones cuenta (Paginado)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/api/cuentas/{{idCuenta}}/transacciones?pagina=1&cantidadPorPagina=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cuentas", "{{idCuenta}}", "transacciones"],
+              "query": [
+                {
+                  "key": "pagina",
+                  "value": "1"
+                },
+                {
+                  "key": "cantidadPorPagina",
+                  "value": "20"
+                }
+              ]
+            }
+          }
         }
-      }
+      ]
     },
     {
-      "name": "Transferencia",
-      "request": {
-        "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "url": {
-          "raw": "http://localhost:5000/api/transacciones/transferencia",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "5000",
-          "path": ["api", "transacciones", "transferencia"]
+      "name": "Transacciones",
+      "item": [
+        {
+          "name": "Deposito",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transacciones/deposito",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transacciones", "deposito"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCuenta\": \"{{idCuenta}}\",\n  \"monto\": 100.00,\n  \"referencia\": \"DEP-001\"\n}"
+            }
+          }
         },
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"idCuentaOrigen\": \"{{idCuentaOrigen}}\",\n  \"idCuentaDestino\": \"{{idCuentaDestino}}\",\n  \"Monto\": 50,\n  \"Referencia\": \"TRF-001\"\n}"
+        {
+          "name": "Retiro",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transactions/retiro",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transacciones", "retiro"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCuenta\": \"{{idCuenta}}\",\n  \"monto\": 50.00,\n  \"referencia\": \"WDR-001\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Transferencia",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/transacciones/transfer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "transacciones", "transferencia"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"idCuentaOrigen\": \"{{idCuentaOrigen}}\",\n  \"idCuentaDestino\": \"{{idCuentaDestino}}\",\n  \"monto\": 25.00,\n  \"referencia\": \"TRF-001\"\n}"
+            }
+          }
         }
-      }
-    },
-    {
-      "name": "Historial de Transacciones",
-      "request": {
-        "method": "GET",
-        "url": {
-          "raw": "http://localhost:5000/api/cuentas/{{idCuenta}}/transacciones?pagina=1&cantidadPorPagina=20",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "5000",
-          "path": ["api", "cuentas", "{{idCuenta}}", "transacciones"],
-          "query": [
-            { "key": "pagina", "value": "1" },
-            { "key": "cantidadPorPagina", "value": "20" }
-          ]
-        }
-      }
+      ]
     }
   ]
 }

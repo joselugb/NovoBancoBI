@@ -19,7 +19,7 @@ public class ClienteController : ControllerBase
     /// </summary>
     [HttpPost("documento-identidad")]
     [ProducesResponseType(typeof(ClienteResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetByDocument(
+    public async Task<IActionResult> ObtenerCuentaPorNumeroDocumento(
         [FromBody] ClienteRequest request,
         CancellationToken cancellationToken)
     {
@@ -32,7 +32,7 @@ public class ClienteController : ControllerBase
     /// </summary>
     [HttpPost("crear")]
     [ProducesResponseType(typeof(ClienteResponse), StatusCodes.Status201Created)]
-    public async Task<IActionResult> Create(
+    public async Task<IActionResult> CrearCliente(
         [FromBody] ClienteRequest request,
         CancellationToken cancellationToken)
     {
