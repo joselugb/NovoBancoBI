@@ -1,7 +1,15 @@
 namespace Application.DTOs;
 
-public record RetiroRequest(
-    Guid IdCuenta,
-    decimal Monto,
-    string Referencia
-);
+public class RetiroRequest
+{
+    public Guid IdCuenta { get; }
+    public decimal Monto { get; }
+    public string Referencia { get; }
+
+    public RetiroRequest(Guid idCuenta, decimal monto, string referencia)
+    {
+        IdCuenta = idCuenta;
+        Monto = monto;
+        Referencia = referencia;
+    }
+}

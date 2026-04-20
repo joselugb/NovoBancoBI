@@ -16,7 +16,7 @@ public class CuentaController : ControllerBase
     
     [HttpGet("{idCuenta}/transacciones")]
     public async Task<IActionResult> ObtenerHistorial(
-        int idCuenta, 
+        Guid idCuenta, 
         [FromQuery] int pagina = 1, 
         [FromQuery]int cantidadPorPagina = 20)
     {

@@ -1,7 +1,7 @@
 namespace Domain.Excepciones;
 
-public abstract class DominioExcepcion : Exception
+public class DominioExcepcion : Exception
 {
-    protected DominioExcepcion(string mensaje) 
+    public DominioExcepcion(string mensaje) 
         : base(mensaje){}
 }

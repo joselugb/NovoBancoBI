@@ -6,19 +6,21 @@ namespace Domain.Entidades;
 public class Cuenta
 {
     public Guid Id {get; set;}
+
+    public Guid IdCliente {get; set;}
     public string NumeroCuenta {get; set;} = string.Empty;
-    public decimal Balance {get; private set;}
-    public int EstadosCuenta { get; set;} = 0;
-
-    public string NumeroCuenta { get; set;} = string.Empty;
-
+    public decimal Balance {get; set;}
+    public EstadosCuenta EstadosCuenta { get; set;} = 0;
+    public TipoCuenta Tipo { get; set; }
+    public string Moneda { get; set; } = string.Empty;
+    public DateTime? FechaCreacion { get; set; } = DateTime.UtcNow;
     public void Credito(decimal monto)
     {
         Balance += monto;
     }
     public void Debito(decimal monto)
     {
-        if(Estado != EstadosCuenta.ACTIVA)
+        if(EstadosCuenta != EstadosCuenta.ACTIVA)
             throw new CuentaInactivaExcepcion();
                 
         if(Balance < monto)

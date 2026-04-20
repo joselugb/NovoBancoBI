@@ -26,6 +26,29 @@ namespace Infrastructure.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "tipos_transacciones", new[] { "deposito", "retiro", "transferencia" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Domain.Entidades.Cliente", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DocumentoIdentidad")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("documento_identidad");
+
+                    b.Property<string>("NombreCompleto")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("nombre_completo");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("clientes", (string)null);
+                });
+
             modelBuilder.Entity("Domain.Entidades.Cuenta", b =>
                 {
                     b.Property<Guid>("Id")
@@ -38,7 +61,8 @@ namespace Infrastructure.Migrations
                         .HasColumnName("balance");
 
                     b.Property<int>("EstadosCuenta")
-                        .HasColumnType("integer");
+                        .HasColumnType("integer")
+                        .HasColumnName("estado_cuenta");
 
                     b.Property<string>("NumeroCuenta")
                         .IsRequired()
@@ -60,18 +84,42 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("EstadoTransaccion")
+                        .HasColumnType("integer")
+                        .HasColumnName("estado_transaccion");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha");
+
+                    b.Property<int>("IdCuentaDestino")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_cuenta_destino");
+
+                    b.Property<int>("IdCuentaOrigen")
+                        .HasColumnType("integer")
+                        .HasColumnName("id_cuenta_origen");
+
                     b.Property<decimal>("Monto")
                         .HasPrecision(15, 2)
-                        .HasColumnType("numeric(15,2)");
+                        .HasColumnType("numeric(15,2)")
+                        .HasColumnName("monto");
 
                     b.Property<string>("Referencia")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("referencia");
+
+                    b.Property<int>("TipoTransaccion")
+                        .HasColumnType("integer")
+                        .HasColumnName("tipo_transaccion");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Referencia")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasDatabaseName("IX_Transacciones_Referencia");
 
                     b.ToTable("transacciones", (string)null);
                 });

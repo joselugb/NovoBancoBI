@@ -1,8 +1,17 @@
 namespace Application.DTOs;
 
-public record TransferenciaRequest(
-    Guid DesdeIdCuenta,
-    Guid HastaIdCuenta,
-    decimal Monto,
-    string Referencia
-);
+public class TransferenciaRequest
+{
+    public Guid IdCuentaOrigen { get; }
+    public Guid IdCuentaDestino { get; }
+    public decimal Monto { get; }
+    public string Referencia { get; }
+
+    public TransferenciaRequest(Guid idCuentaOrigen, Guid idCuentaDestino, decimal monto, string referencia)
+    {
+        IdCuentaOrigen = idCuentaOrigen;
+        IdCuentaDestino = idCuentaDestino;
+        Monto = monto;
+        Referencia = referencia;
+    }
+}
