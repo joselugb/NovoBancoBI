@@ -10,11 +10,9 @@ namespace Application.Servicios;
 public class TransaccionServicio
 {
     private readonly IBancoDbContext conexionDb;
-    private readonly CuentaServicio cuentaServicio;
-    public TransaccionServicio(IBancoDbContext conexionDb, CuentaServicio cuentaServicio)
+    public TransaccionServicio(IBancoDbContext conexionDb)
     {
         this.conexionDb = conexionDb;
-        this.cuentaServicio = cuentaServicio;
     }
     /// <summary>
     /// Deposita un monto específico en una cuenta bancaria.

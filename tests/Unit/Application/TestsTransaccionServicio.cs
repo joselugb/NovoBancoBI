@@ -3,6 +3,7 @@ using Application.DTOs;
 using Application.Servicios;
 using Domain.Entidades;
 using Domain.Enumeradores;
+using Domain.Excepciones;
 using Xunit;
 
 
@@ -17,17 +18,17 @@ public class TestsTransaccionServicio
         var cuenta = new Cuenta
         {
             Id = Guid.NewGuid(),
-            Estado = EstadosCuenta.ACTIVA
+            EstadosCuenta = EstadosCuenta.ACTIVA
         };
 
-        db.Cuenta.Add(cuenta);
+        db.Cuentas.Add(cuenta);
         await db.SaveChangesAsync();
 
         var service = new TransaccionServicio(db);
-        var request = new DepositoRequest(account.Id, 100, "REF-001");
+        var request = new DepositoRequest(cuenta.Id, 100, "REF-001");
 
-        await service.DepositAsync(request);
-        await service.DepositAsync(request);
+        await service.DepositoAsync(request);
+        await service.DepositoAsync(request);
 
         Assert.Equal(100, cuenta.Balance);
 
@@ -42,16 +43,16 @@ public class TestsTransaccionServicio
         var cuentaOrigen = new Cuenta
         {
             Id = Guid.NewGuid(),
-            Estado = EstadosCuenta.ACTIVA
+            EstadosCuenta = EstadosCuenta.ACTIVA
         };
 
         var cuentaDestino = new Cuenta
         {
             Id = Guid.NewGuid(),
-            Estado = EstadosCuenta.BLOQUEADA
+            EstadosCuenta = EstadosCuenta.BLOQUEADA
         };
 
-        db.Cuentas.AddRange(from, to);
+        db.Cuentas.AddRange(cuentaOrigen, cuentaDestino);
         await db.SaveChangesAsync();
 
         var service = new TransaccionServicio(db);

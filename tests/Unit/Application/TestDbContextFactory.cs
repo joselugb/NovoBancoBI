@@ -1,6 +1,7 @@
 ﻿using Infrastructure.Persistencia;
 using Microsoft.EntityFrameworkCore;
 
+
 public static class TestDbContextFactory
 {
     public static BancoDbContext Create()

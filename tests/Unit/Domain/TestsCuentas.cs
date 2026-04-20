@@ -10,7 +10,7 @@ public class TestsCuentas
 	{
 		var cuenta = new Cuenta
 		{
-			Estado = EstadosCuenta.ACTIVA
+			EstadosCuenta = EstadosCuenta.ACTIVA
 		};
 
         Assert.Throws<InsuficienteBalanceExcepcion>(() => cuenta.Debito(100));
@@ -22,7 +22,7 @@ public class TestsCuentas
     {
         var cuenta = new Cuenta
         {
-            Estado = EstadosCuenta.BLOQUEADA
+            EstadosCuenta = EstadosCuenta.BLOQUEADA
         };
 
         Assert.Throws<CuentaInactivaExcepcion>(() => cuenta.Debito(100));
