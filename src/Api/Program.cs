@@ -16,7 +16,7 @@ builder.Services.AddScoped<IBancoDbContext>(sp =>
     sp.GetRequiredService<BancoDbContext>());
 
 builder.Services.AddScoped<Application.Servicios.TransaccionServicio>();
-builder.Services.AddScoped<Application.Servicios.TransaccionQueryServicios>();
+builder.Services.AddScoped<Application.Servicios.CuentaServicio>();
 builder.Services.AddScoped<Application.Servicios.ClienteServicio>();
 
 var app = builder.Build();

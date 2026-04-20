@@ -11,12 +11,10 @@ public class TransaccionServicio
 {
     private readonly IBancoDbContext conexionDb;
     private readonly CuentaServicio cuentaServicio;
-    private readonly TransaccionQueryServicios _transactionRepository;
-    public TransaccionServicio(IBancoDbContext conexionDb, CuentaServicio cuentaServicio, TransaccionQueryServicios transactionRepository)
+    public TransaccionServicio(IBancoDbContext conexionDb, CuentaServicio cuentaServicio)
     {
         this.conexionDb = conexionDb;
         this.cuentaServicio = cuentaServicio;
-        this._transactionRepository = transactionRepository;
     }
     /// <summary>
     /// Deposita un monto específico en una cuenta bancaria.
@@ -86,25 +84,38 @@ public class TransaccionServicio
         // Validar que la cuenta esté activa
         AsegurarCuentaActiva(cuenta);
 
-        using var transaccion = await ((Microsoft.EntityFrameworkCore.DbContext)conexionDb).Database.BeginTransactionAsync();        
+        // Validar referencia única
+        var referenciaExiste = await conexionDb.Transacciones.FirstOrDefaultAsync(c => c.Referencia == request.Referencia, cancellationToken);
+
+        if (referenciaExiste is not null)
+        {
+            throw new DominioExcepcion("Existe una transaccion con la misma referencia");
+        }
+
+        // Validar saldo suficiente
+        if (cuenta.Balance < request.Monto)
+        {
+            throw new InsuficienteBalanceExcepcion();
+        }
+
+        await conexionDb.BeginTransactionAsync();
+
         // Aplicar lógica
-        cuenta.Debito(request.Monto);
-        await conexionDb.SaveChangesAsync(cancellationToken);
+        cuenta.Debito(request.Monto);        
 
         this.conexionDb.Transacciones.Add(new Transaccion
         {
             Id = Guid.NewGuid(),
-            IdCuentaOrigen = Guid.Empty,
-            IdCuentaDestino = request.IdCuenta,
+            IdCuentaOrigen = request.IdCuenta,
             Monto = request.Monto,
             TipoTransaccion = TiposTransacciones.RETIRO,
             EstadoTransaccion = (int)EstadoTransaccion.CORRECTA,
             Referencia = Guid.NewGuid().ToString(),
             Fecha = DateTime.UtcNow
         });
-        
+                
         await conexionDb.SaveChangesAsync(cancellationToken);
-        await transaccion.CommitAsync(cancellationToken);  
+        await conexionDb.CommitTransactionAsync(cancellationToken);  
     }
 
     public async Task TransferenciaAsync(TransferenciaRequest request, CancellationToken cancellationToken = default)
@@ -117,23 +128,43 @@ public class TransaccionServicio
 
         if (request.IdCuentaOrigen == request.IdCuentaDestino)
         {
-            throw new DominioExcepcion("La cuenta de origen y destino no pueden ser la misma.");
+            throw new DominioExcepcion("La cuenta de origen y destino no pueden ser la misma deben ser diferentes.");
         }
 
-        using var transaccion = await ((Microsoft.EntityFrameworkCore.DbContext)conexionDb).Database.BeginTransactionAsync(cancellationToken);
+        // Validar referencia única
+        var referenciaExiste = await conexionDb.Transacciones.FirstOrDefaultAsync(c => c.Referencia == request.Referencia, cancellationToken);
+
+        if (referenciaExiste is not null)
+        {
+            throw new DominioExcepcion("Existe una transaccion con la misma referencia");
+        }
+
+        await conexionDb.BeginTransactionAsync();
         try
         {
             var cuentaOrigen = await conexionDb.Cuentas.FirstOrDefaultAsync(c => c.Id == request.IdCuentaOrigen, cancellationToken) ?? throw new DominioExcepcion("Cuenta origen no encontrada");
             var cuentaDestino = await conexionDb.Cuentas.FirstOrDefaultAsync(c => c.Id == request.IdCuentaDestino, cancellationToken) ?? throw new DominioExcepcion("Cuenta destino no encontrada");
 
+            if (cuentaOrigen is null)
+                throw new DominioExcepcion("Cuenta origen no encontrada.");
+
+            if (cuentaDestino is null)
+                throw new DominioExcepcion("Cuenta destino no encontrada.");
+
             // Validar que las cuentas estén activas
             AsegurarCuentaActiva(cuentaOrigen);
             AsegurarCuentaActiva(cuentaDestino);
 
-            // Aplicar movimientos usando métodos de dominio
+            // Validar saldo suficiente
+            if (cuentaOrigen.Balance < request.Monto)
+            {
+                throw new InsuficienteBalanceExcepcion();
+            }
+
+            // Aplicar movimientos
             cuentaOrigen.Debito(request.Monto);
             cuentaDestino.Credito(request.Monto);
-            
+
             string baseReference = Guid.NewGuid().ToString();
 
             // Registro de débito
@@ -164,12 +195,12 @@ public class TransaccionServicio
             
             conexionDb.Transacciones.Add(transaccionDebito);
             conexionDb.Transacciones.Add(transaccionCredito);
-            await conexionDb.SaveChangesAsync(cancellationToken);        
-            await transaccion.CommitAsync(cancellationToken);
+            await conexionDb.SaveChangesAsync(cancellationToken);
+            await conexionDb.CommitTransactionAsync(cancellationToken);
         }
         catch(Exception)
         {
-            await transaccion.RollbackAsync(cancellationToken);
+            await conexionDb.RollbackTransactionAsync(cancellationToken);
             throw;
         }        
     }
@@ -182,7 +213,7 @@ public class TransaccionServicio
     /// <param name="cantidadPorPagina"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<(IReadOnlyList<TransaccionResponse> Items, int TotalCount)> ObtenerTransaccionesDeCuentaAsync(
+    public async Task <(IReadOnlyList<TransaccionResponse> Items, int TotalCount)> ObtenerTransaccionesDeCuentaAsync(
         Guid idCuenta,
         int pagina,
         int cantidadPorPagina,
@@ -195,15 +226,38 @@ public class TransaccionServicio
             throw new DominioExcepcion("Cuenta no encontrada.");
         }
 
-        var transacciones = await _transactionRepository.ObtenerHistorialAsync(idCuenta, pagina, cantidadPorPagina);
+        var transacciones = await ObtenerPaginasPorIdCuentaAsync(idCuenta, pagina, cantidadPorPagina, cancellationToken);
 
-        var totalCount = await conexionDb.Transacciones
-            .Where(t => t.IdCuentaOrigen == idCuenta || t.IdCuentaDestino == idCuenta)
-            .CountAsync(cancellationToken);
+        var items = transacciones.Items.Select(x => new TransaccionResponse
+        {
+            Id = x.Id,
+            IdCuentaOrigen = x.IdCuentaOrigen,
+            IdCuentaDestino = (Guid)x.IdCuentaDestino,
+            Monto = x.Monto,
+            TipoTransaccion = x.TipoTransaccion,
+            Referencia = x.Referencia,
+            EstadoTransaccion = x.EstadoTransaccion,
+            Fecha = x.Fecha
+        }).ToList();
 
-        return (transacciones.AsReadOnly(), totalCount);
+        return (items, transacciones.TotalCount);
     }
 
+    public async Task <(IReadOnlyList<Transaccion> Items, int TotalCount)> ObtenerPaginasPorIdCuentaAsync(Guid idCuenta, int pagina, int cantidadPorPagina, CancellationToken cancellationToken = default)
+    {
+        var consulta = conexionDb.Transacciones
+            .Where(x => x.IdCuentaOrigen == idCuenta || x.IdCuentaDestino == idCuenta)
+            .OrderByDescending(x => x.Fecha);
+
+        var totalCount = await consulta.CountAsync(cancellationToken);
+
+        var items = await consulta
+            .Skip((pagina - 1) * cantidadPorPagina)
+            .Take(cantidadPorPagina)
+            .ToListAsync(cancellationToken);
+
+        return (items, totalCount);
+    }
     /// <summary>
     /// Valida que la cuenta esté en estado activo.
     /// </summary>

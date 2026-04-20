@@ -2,8 +2,6 @@ using Application.Interfaces;
 using Domain.Entidades;
 using Domain.Enumeradores;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using System.Transactions;
 
 namespace Infrastructure.Persistencia;
 
@@ -34,10 +32,20 @@ public class BancoDbContext : DbContext, IBancoDbContext
 
             entity.HasKey(e => e.Id);
 
+            entity.Property(e => e.Id).HasColumnName("Id");
+
             entity.Property(e => e.NumeroCuenta)
                   .HasColumnName("numero_cuenta")
                   .HasMaxLength(20)
                   .IsRequired();
+
+            entity.Property(e => e.IdCliente)
+                .HasColumnName("id_cliente");
+
+            entity.Property(e => e.Moneda)
+                .HasColumnName("moneda")
+                .HasMaxLength(3)
+                .IsRequired();
 
             entity.Property(e => e.Balance)
                   .HasColumnName("balance")
@@ -45,12 +53,33 @@ public class BancoDbContext : DbContext, IBancoDbContext
                   .IsRequired();
 
             entity.HasIndex(e => e.NumeroCuenta)
-                  .IsUnique();
-            
+                  .IsUnique()
+                  .HasDatabaseName("IX_Cuentas_NumeroCuenta");
+
+            entity.HasIndex(e => e.IdCliente)
+                .HasDatabaseName("IX_Cuentas_IdCliente");
+
             entity.Property(e => e.EstadosCuenta)
                   .HasColumnName("estado_cuenta")
                   .HasConversion<int>()
                   .IsRequired();
+
+            entity.Property(e => e.FechaCreacion)
+                .HasColumnName("fecha_creacion");
+
+            entity.Property(e => e.RowVersion)
+                .HasColumnName("RowVersion")
+                .IsRowVersion();
+
+            entity.HasOne(e => e.Cliente)
+                .WithMany(e => e.Cuentas)
+                .HasForeignKey(e => e.IdCliente)
+                .HasConstraintName("FK_Cuentas_Clientes");
+
+            entity.ToTable(t =>
+            {
+                t.HasCheckConstraint("CK_Cuentas_Saldo_NoNegativo", "[Saldo] >= 0");
+            });
         });
 
         // ========= Tabla Transaccion =========
@@ -59,6 +88,8 @@ public class BancoDbContext : DbContext, IBancoDbContext
             entity.ToTable("transacciones");
 
             entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Id).HasColumnName("Id");
 
             entity.Property(e => e.IdCuentaOrigen)
                   .HasColumnName("id_cuenta_origen")
@@ -94,6 +125,15 @@ public class BancoDbContext : DbContext, IBancoDbContext
 
             entity.Property(e => e.Fecha)
                   .HasColumnName("fecha");
+
+            entity.HasIndex(e => new { e.IdCuentaOrigen, e.Fecha })
+                .HasDatabaseName("IX_Transacciones_IdCuentaOrigen_Fecha");
+
+            entity.HasOne(e => e.Cuenta)
+                .WithMany()
+                .HasForeignKey(e => e.IdCuentaOrigen)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("FK_Transacciones_Cuentas");
         });
 
         // ========= Tabla Cliente =========
@@ -102,6 +142,7 @@ public class BancoDbContext : DbContext, IBancoDbContext
             entity.ToTable("clientes");
 
             entity.HasKey(e => e.Id);
+            entity.Property(e => e.Id).HasColumnName("Id");
 
             entity.Property(e => e.NombreCompleto)
                   .HasColumnName("nombre_completo")
@@ -112,6 +153,9 @@ public class BancoDbContext : DbContext, IBancoDbContext
                   .HasColumnName("documento_identidad")
                   .HasMaxLength(20)
                   .IsRequired();
+            entity.HasIndex(x => x.DocumentoIdentidad)
+                .IsUnique()
+                .HasDatabaseName("IX_Clientes_DocumentoIdentidad");
         });
 
     }

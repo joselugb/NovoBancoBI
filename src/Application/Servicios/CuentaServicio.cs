@@ -23,9 +23,9 @@ public class CuentaServicio
     /// <param name="request"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task<CuentaResponse> CrearCuentaAsync(CuentaRequest request, CancellationToken cancellationToken = default)
+    public async Task<CuentaResponse> CrearCuentaAsync(CrearCuentaRequest request, CancellationToken cancellationToken = default)
     {
-        var cliente = await conexionDb.Clientes.FirstOrDefaultAsync(c => c.DocumentoIdentidad == request.DocumentoIdentidad, cancellationToken);
+        var cliente = await conexionDb.Clientes.FirstOrDefaultAsync(c => c.Id == request.IdCliente, cancellationToken);
 
         if (cliente is null)
         {
