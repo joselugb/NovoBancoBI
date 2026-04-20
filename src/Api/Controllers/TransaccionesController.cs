@@ -22,4 +22,11 @@ public class TransaccionesController : ControllerBase
         return Ok();
     }
 
+    [HttpPost("transferencia")]
+    public async Task<IActionResult> Transferencia(TransferenciaRequest request)
+    {
+        await this.servicio.TransferenciaAsync(request);
+        return Ok();
+    }
+
 }
