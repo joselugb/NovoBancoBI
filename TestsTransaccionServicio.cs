@@ -26,7 +26,6 @@ public class TestsTransaccionServicio
         var service = new TransaccionServicio(db);
         var request = new DepositoRequest(account.Id, 100, "REF-001");
 
-        // Act
         await service.DepositAsync(request);
         await service.DepositAsync(request);
 

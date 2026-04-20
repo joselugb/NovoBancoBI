@@ -37,7 +37,7 @@ public class CuentaServicio
             Id = Guid.NewGuid(),
             IdCliente = cliente.Id,
             NumeroCuenta = GenerarNumeroCuenta(),
-            Tipo = Domain.Enumeradores.TipoCuenta.AHORROS,
+            Tipo = request.TipoCuenta,
             Moneda = "USD",
             Balance = 0.00m,
             EstadosCuenta = Domain.Enumeradores.EstadosCuenta.ACTIVA,

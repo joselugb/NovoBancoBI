@@ -52,7 +52,7 @@ public class TransaccionesController : ControllerBase
     /// <param name="cancellationToken">cancellationToken</param>
     /// <returns></returns>
     [HttpPost("retiro")]
-    public async Task<IActionResult> Withdraw(
+    public async Task<IActionResult> Retiro(
         [FromBody] RetiroRequest request,
         CancellationToken cancellationToken)
     {
