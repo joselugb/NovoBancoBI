@@ -1,7 +1,7 @@
 # Microservicio de Gestión de Cuentas y Transacciones – NovoBancoBI
 
 ## 1. Contexto
-Este proyecto(El área de Canales Digitales) implementa un **microservicio backend bancario** para la gestión de cuentas y transacciones, destinado a ser consumido por aplicaciones móviles y web.
+Este proyecto implementa un **microservicio backend bancario** para la gestión de cuentas y transacciones, destinado a ser consumido por aplicaciones móviles y web.
 
 El dominio bancario requiere **consistencia, atomicidad, trazabilidad y correctitud**, ya que errores lógicos pueden generar pérdidas financieras o implicaciones regulatorias.
 
@@ -29,7 +29,7 @@ tests/
 
 - **.NET 8 / C#**
 - **ASP.NET Core Web API**
-- **PostgreSQL 16**
+- **PostgreSQL 15**
 - **Entity Framework Core**
 - **Docker / Docker Compose**
 - **xUnit** (pruebas)
@@ -87,6 +87,8 @@ El esquema se documenta en schema.sql, incluyendo:
 - Claves primarias y foráneas
 - Restricciones de integridad
 - Índices explícitos
+- La selección del motor, el diseño del esquema y las decisiones de modelado forman parte del entregable principal de la prueba técnica.
+- El endpoint de historial está optimizado mediante un índice compuesto, permitiendo paginación eficiente incluso con grandes volúmenes de datos.
 
 ## 8. Pruebas
 Se incluyen pruebas unitarias enfocadas en reglas bancarias críticas:
