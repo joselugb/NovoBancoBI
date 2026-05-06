@@ -14,7 +14,6 @@ public class Cuenta
     public TipoCuenta Tipo { get; set; }
     public string Moneda { get; set; } = string.Empty;
     public DateTime? FechaCreacion { get; set; } = DateTime.UtcNow;
-    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
     public Cliente? Cliente { get; set; }
     public void Credito(decimal monto)

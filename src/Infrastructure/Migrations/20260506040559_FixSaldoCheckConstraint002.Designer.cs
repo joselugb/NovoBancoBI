@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(BancoDbContext))]
-    [Migration("20260420060016_InitialPostgres")]
-    partial class InitialPostgres
+    [Migration("20260506040559_FixSaldoCheckConstraint002")]
+    partial class FixSaldoCheckConstraint002
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,7 +33,8 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id");
 
                     b.Property<string>("DocumentoIdentidad")
                         .IsRequired()
@@ -49,6 +50,10 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DocumentoIdentidad")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Clientes_DocumentoIdentidad");
+
                     b.ToTable("clientes", (string)null);
                 });
 
@@ -56,7 +61,8 @@ namespace Infrastructure.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id");
 
                     b.Property<decimal>("Balance")
                         .HasPrecision(15, 2)
@@ -67,25 +73,57 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("estado_cuenta");
 
+                    b.Property<DateTime?>("FechaCreacion")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("fecha_creacion");
+
+                    b.Property<Guid>("IdCliente")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id_cliente");
+
+                    b.Property<string>("Moneda")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("moneda");
+
                     b.Property<string>("NumeroCuenta")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("numero_cuenta");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("bytea")
+                        .HasColumnName("RowVersion");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("NumeroCuenta")
-                        .IsUnique();
+                    b.HasIndex("IdCliente")
+                        .HasDatabaseName("IX_Cuentas_IdCliente");
 
-                    b.ToTable("cuenta", (string)null);
+                    b.HasIndex("NumeroCuenta")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Cuentas_NumeroCuenta");
+
+                    b.ToTable("cuenta", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Cuentas_Saldo_NoNegativo", "balance >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entidades.Transaccion", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("Id");
 
                     b.Property<int>("EstadoTransaccion")
                         .HasColumnType("integer")
@@ -95,12 +133,12 @@ namespace Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("fecha");
 
-                    b.Property<int>("IdCuentaDestino")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("IdCuentaDestino")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_cuenta_destino");
 
-                    b.Property<int>("IdCuentaOrigen")
-                        .HasColumnType("integer")
+                    b.Property<Guid>("IdCuentaOrigen")
+                        .HasColumnType("uuid")
                         .HasColumnName("id_cuenta_origen");
 
                     b.Property<decimal>("Monto")
@@ -124,7 +162,39 @@ namespace Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("IX_Transacciones_Referencia");
 
+                    b.HasIndex("IdCuentaOrigen", "Fecha")
+                        .HasDatabaseName("IX_Transacciones_IdCuentaOrigen_Fecha");
+
                     b.ToTable("transacciones", (string)null);
+                });
+
+            modelBuilder.Entity("Domain.Entidades.Cuenta", b =>
+                {
+                    b.HasOne("Domain.Entidades.Cliente", "Cliente")
+                        .WithMany("Cuentas")
+                        .HasForeignKey("IdCliente")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Cuentas_Clientes");
+
+                    b.Navigation("Cliente");
+                });
+
+            modelBuilder.Entity("Domain.Entidades.Transaccion", b =>
+                {
+                    b.HasOne("Domain.Entidades.Cuenta", "Cuenta")
+                        .WithMany()
+                        .HasForeignKey("IdCuentaOrigen")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_Transacciones_Cuentas");
+
+                    b.Navigation("Cuenta");
+                });
+
+            modelBuilder.Entity("Domain.Entidades.Cliente", b =>
+                {
+                    b.Navigation("Cuentas");
                 });
 #pragma warning restore 612, 618
         }

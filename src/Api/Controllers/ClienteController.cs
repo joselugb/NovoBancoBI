@@ -37,7 +37,7 @@ public class ClienteController : ControllerBase
         CancellationToken cancellationToken)
     {
         var result = await _clienteServicio.CrearClienteAsync(request, cancellationToken);
-        return CreatedAtAction(nameof(ObtenerClienteId), new { id = result.Id }, result);
+        return CreatedAtAction(nameof(ObtenerClienteId), new { guid = result.Id }, result);
     }
 
     /// <summary>

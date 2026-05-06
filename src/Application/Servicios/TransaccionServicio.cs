@@ -45,7 +45,7 @@ public class TransaccionServicio
         this.conexionDb.Transacciones.Add(new Transaccion
         {
             Id = Guid.NewGuid(),
-            IdCuentaOrigen = Guid.Empty,
+            IdCuentaOrigen = request.IdCuenta, //al ser un deposito la cuenta origen y destino es la misma
             IdCuentaDestino = request.IdCuenta,
             Monto = request.Monto,
             TipoTransaccion = (int)TiposTransacciones.DEPOSITO,
@@ -103,8 +103,9 @@ public class TransaccionServicio
 
         this.conexionDb.Transacciones.Add(new Transaccion
         {
-            Id = Guid.NewGuid(),
-            IdCuentaOrigen = request.IdCuenta,
+            Id = Guid.NewGuid(),            
+            IdCuentaOrigen = request.IdCuenta, //al ser un retiro la cuenta origen y destino es la misma
+            IdCuentaDestino = request.IdCuenta,
             Monto = request.Monto,
             TipoTransaccion = TiposTransacciones.RETIRO,
             EstadoTransaccion = (int)EstadoTransaccion.CORRECTA,

@@ -24,11 +24,7 @@ public class GlobalExceptionMiddleware
         }
         catch (Exception ex)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            context.Response.ContentType = "application/json";
-            var response = new { mensaje = ex.Message };
-            await context.Response.WriteAsync(JsonSerializer.Serialize(response));
-            this.logger.LogError(ex, "Error de dominioExcepcion: {Mensaje}", ex.Message);
+            logger.LogError(ex, "Error capturado en GlobalExceptionMiddleware: {Mensaje}", ex.Message);
             await HandleExceptionAsync(context, ex);
         }
     }
@@ -39,6 +35,7 @@ public class GlobalExceptionMiddleware
         {
             DominioExcepcion => HttpStatusCode.Conflict,
             ArgumentException => HttpStatusCode.BadRequest,
+            InvalidOperationException => HttpStatusCode.BadRequest,
             _ => HttpStatusCode.InternalServerError
         };
 

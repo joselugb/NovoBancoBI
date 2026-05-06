@@ -67,9 +67,12 @@ public class BancoDbContext : DbContext, IBancoDbContext
             entity.Property(e => e.FechaCreacion)
                 .HasColumnName("fecha_creacion");
 
-            entity.Property(e => e.RowVersion)
-                .HasColumnName("RowVersion")
-                .IsRowVersion();
+            // entity.Property(e => e.RowVersion)
+            //     .HasColumnName("RowVersion")
+            //     .IsRowVersion();
+            entity.Property<uint>("xmin")
+                .IsRowVersion()
+                .IsConcurrencyToken();
 
             entity.HasOne(e => e.Cliente)
                 .WithMany(e => e.Cuentas)
@@ -78,7 +81,7 @@ public class BancoDbContext : DbContext, IBancoDbContext
 
             entity.ToTable(t =>
             {
-                t.HasCheckConstraint("CK_Cuentas_Saldo_NoNegativo", "[Saldo] >= 0");
+                t.HasCheckConstraint("CK_Cuentas_Saldo_NoNegativo", "balance >= 0");
             });
         });
 

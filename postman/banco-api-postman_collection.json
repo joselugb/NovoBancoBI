@@ -2,31 +2,8 @@
   "info": {
     "name": "NovoBancoBI - Banking API",
     "description": "Colección Postman para probar el microservicio de Gestión de Cuentas y Transacciones del NovoBanco.",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_postman_id": "8a7f5e12-4f47-4b15-9b54-111122223333"
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:5000",
-      "type": "string"
-    },
-    {
-      "key": "idCuenta",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "idCuentaOrigen",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "idCuentaDestino",
-      "value": "",
-      "type": "string"
-    }
-  ],
   "item": [
     {
       "name": "Cuentas",
@@ -38,17 +15,36 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json"
+                "value": "application/json",
+                "disabled": false,
+                "type": "default"
               }
             ],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
             "url": {
               "raw": "{{baseUrl}}/api/cuentas",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "cuentas"]
+              "protocol": "",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cuentas"
+              ],
+              "query": [],
+              "variable": []
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"type\": \"AHORROS\"\n}"
+              "raw": "{\n  \"idCliente\": \"b6208a9d-4d5e-4bd4-ae18-3be1ba23977b\",\n  \"tipoCuenta\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           }
         },
@@ -56,10 +52,24 @@
           "name": "Obtener datos cuenta",
           "request": {
             "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
             "url": {
               "raw": "{{baseUrl}}/api/cuentas/{{idCuenta}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "cuentas", "{{idCuenta}}"]
+              "protocol": "",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cuentas",
+                "{{idCuenta}}"
+              ],
+              "query": [],
+              "variable": []
             }
           }
         },
@@ -67,10 +77,23 @@
           "name": "Obtener transacciones cuenta (Paginado)",
           "request": {
             "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
             "url": {
               "raw": "{{baseUrl}}/api/cuentas/{{idCuenta}}/transacciones?pagina=1&cantidadPorPagina=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "cuentas", "{{idCuenta}}", "transacciones"],
+              "protocol": "",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "cuentas",
+                "{{idCuenta}}",
+                "transacciones?pagina=1&cantidadPorPagina=20"
+              ],
               "query": [
                 {
                   "key": "pagina",
@@ -80,7 +103,8 @@
                   "key": "cantidadPorPagina",
                   "value": "20"
                 }
-              ]
+              ],
+              "variable": []
             }
           }
         }
@@ -96,17 +120,37 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json"
+                "value": "application/json",
+                "disabled": false,
+                "type": "default"
               }
             ],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
             "url": {
               "raw": "{{baseUrl}}/api/transacciones/deposito",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "transacciones", "deposito"]
+              "protocol": "",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transacciones",
+                "deposito"
+              ],
+              "query": [],
+              "variable": []
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"idCuenta\": \"{{idCuenta}}\",\n  \"monto\": 100.00,\n  \"referencia\": \"DEP-001\"\n}"
+              "raw": "{\n  \"idCuenta\": \"{{idCuenta}}\",\n  \"monto\": 2.00,\n  \"referencia\": \"DEP-004\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           }
         },
@@ -117,17 +161,37 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json"
+                "value": "application/json",
+                "disabled": false,
+                "type": "default"
               }
             ],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
             "url": {
-              "raw": "{{baseUrl}}/api/transactions/retiro",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "transacciones", "retiro"]
+              "raw": "{{baseUrl}}/api/transacciones/retiro",
+              "protocol": "",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transacciones",
+                "retiro"
+              ],
+              "query": [],
+              "variable": []
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"idCuenta\": \"{{idCuenta}}\",\n  \"monto\": 50.00,\n  \"referencia\": \"WDR-001\"\n}"
+              "raw": "{\n  \"idCuenta\": \"{{idCuenta}}\",\n  \"monto\": 10.00,\n  \"referencia\": \"WDR-001\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           }
         },
@@ -138,21 +202,161 @@
             "header": [
               {
                 "key": "Content-Type",
-                "value": "application/json"
+                "value": "application/json",
+                "disabled": false,
+                "type": "default"
               }
             ],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
             "url": {
-              "raw": "{{baseUrl}}/api/transacciones/transfer",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "transacciones", "transferencia"]
+              "raw": "{{baseUrl}}/api/transacciones/transferencia",
+              "protocol": "",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "transacciones",
+                "transferencia"
+              ],
+              "query": [],
+              "variable": []
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"idCuentaOrigen\": \"{{idCuentaOrigen}}\",\n  \"idCuentaDestino\": \"{{idCuentaDestino}}\",\n  \"monto\": 25.00,\n  \"referencia\": \"TRF-001\"\n}"
+              "raw": "{\n  \"idCuentaOrigen\": \"{{idCuentaOrigen}}\",\n  \"idCuentaDestino\": \"{{idCuentaDestino}}\",\n  \"monto\": 10000.00,\n  \"referencia\": \"TRF-001\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
             }
           }
         }
       ]
+    },
+    {
+      "name": "Clientes",
+      "item": [
+        {
+          "name": "CrearClienteNuevo",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "http://localhost:5140/api/clientes/crear",
+              "protocol": "http",
+              "host": [
+                "localhost:5140"
+              ],
+              "path": [
+                "api",
+                "clientes",
+                "crear"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentoIdentidad\": \"160061394\",\n  \"nombreCompleto\": \"VANESSA CARRASCO\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "ConsultarPorCedula",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "{{baseUrl}}/api/clientes/documento-identidad",
+              "protocol": "",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "clientes",
+                "documento-identidad"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentoIdentidad\": \"1718507922\",\n  \"nombreCompleto\": \"string\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "ConsultarClientePorGuid",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "",
+            "url": {
+              "raw": "http://localhost:5140/api/clientes/b6208a9d-4d5e-4bd4-ae18-3be1ba23977b",
+              "protocol": "http",
+              "host": [
+                "localhost:5140"
+              ],
+              "path": [
+                "api",
+                "clientes",
+                "b6208a9d-4d5e-4bd4-ae18-3be1ba23977b"
+              ],
+              "query": [],
+              "variable": []
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5140",
+      "type": "default"
+    },
+    {
+      "key": "idCuenta",
+      "value": "89e553a6-96de-4b11-8653-987e2135722b",
+      "type": "default"
+    },
+    {
+      "key": "idCuentaOrigen",
+      "value": "89e553a6-96de-4b11-8653-987e2135722b",
+      "type": "default"
+    },
+    {
+      "key": "idCuentaDestino",
+      "value": "bd8643b4-8960-489b-974e-914022222c48",
+      "type": "default"
     }
   ]
 }
